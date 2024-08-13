@@ -1,13 +1,11 @@
 /**
- * @param {number[]} nums
- * @param {Function} fn
- * @param {number} init
+ * @param {...(null|boolean|number|string|Array|Object)} args
  * @return {number}
  */
-function reduce(nums, fn, init) {
-    let accumulator = init;
-    for (let i = 0; i < nums.length; i++) {
-        accumulator = fn(accumulator, nums[i]);
-    }
-    return accumulator;
-}
+var argumentsLength = function(...args) {
+    return args.length;
+};
+
+/**
+ * argumentsLength(1, 2, 3); // 3
+ */
