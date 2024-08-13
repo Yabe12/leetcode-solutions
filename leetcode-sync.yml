@@ -1,0 +1,24 @@
+name: LeetCode Sync
+
+on:
+  workflow_dispatch: # Allows you to manually trigger the workflow
+  schedule:
+    - cron: '0 0 * * *' # Runs daily at midnight (adjust as needed)
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Sync LeetCode Solutions
+        run: |
+          git config --global user.email "yeabsirabehailu92@gmail.com"
+          git config --global user.name "Yabe12"
+          git clone https://${{ secrets.LeetCode_Sync}}@github.com/Yabe12/leetcode-solutions.git
+          # Add commands to sync your LeetCode solutions here
+          git add .
+          git commit -m "LeetCode solutions update"
+          git push origin main
