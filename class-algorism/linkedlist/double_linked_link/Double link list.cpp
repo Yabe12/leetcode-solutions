@@ -94,6 +94,7 @@ void insert_data_specific_position() {
         return;
     }
     
+    
     Student *temp = start;
     for (int i = 1; i < position - 1 && temp != NULL; i++) {
         temp = temp->next;  // Traverse to the node just before the desired position
@@ -286,4 +287,101 @@ int main() {
         }
     }
     return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+void insertionSort(vector<int>& arr) {
+    int n = arr.size();
+    for (int i = 1; i < n; ++i) {
+        int key = arr[i];  // Element to be compared
+        int j = i - 1;
+
+        // Move elements of arr[0..i-1] that are greater than key
+        // to one position ahead of their current position
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            --j;
+        }
+        arr[j + 1] = key;  // Place the key in the correct position
+    }
+}
+
+int main() {
+    vector<int> arr = {12, 11, 13, 5, 6};
+    
+    cout << "Original array: ";
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+
+    insertionSort(arr);
+
+    cout << "Sorted array: ";
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
+
+
+
+
+void sort_students() {
+    if (student_head == NULL) return;  // No students to sort
+    
+    student *current = student_head->next;
+    while (current != NULL) {
+        student *key = current;
+        student *prev = student_head;
+        
+        // Find the position to insert the current node
+        // Traverse the list to find the correct position for the key node
+        while (prev != key && strcmp(prev->name, key->name) < 0) {
+            prev = prev->next;
+        }
+
+        // If the key is not already in the correct place, move it
+        if (prev != key) {
+            // Remove key from the current position
+            key->priv->next = key->next;
+            if (key->next != NULL) {
+                key->next->priv = key->priv;
+            }
+
+            // Insert key after prev
+            key->next = prev->next;
+            if (prev->next != NULL) {
+                prev->next->priv = key;
+            }
+            prev->next = key;
+            key->priv = prev;
+        }
+
+        // Move to the next node to sort it
+        current = current->next;
+    }
 }

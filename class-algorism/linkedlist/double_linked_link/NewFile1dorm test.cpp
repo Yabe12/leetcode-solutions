@@ -95,3 +95,97 @@ int main() {
     }
     return 0; 
 }
+
+
+
+
+
+
+
+
+
+
+#include <iostream>
+using namespace std;
+
+// Function to perform binary search
+int binarySearch(int arr[], int size, int target) {
+    int low = 0, high = size - 1;
+
+    while (low <= high) {
+        int mid = low + (high - low) / 2; // Calculate the mid-point to avoid overflow
+
+        if (arr[mid] == target) {
+            return mid; // Target found
+        } else if (arr[mid] < target) {
+            low = mid + 1; // Search in the right half
+        } else {
+            high = mid - 1; // Search in the left half
+        }
+    }
+
+    return -1; // Target not found
+}
+
+int main() {
+    int arr[] = {2, 4, 6, 8, 10, 12, 14}; // Sorted array
+    int size = sizeof(arr) / sizeof(arr[0]);
+
+    int target;
+    cout << "Enter the target value to search: ";
+    cin >> target;
+
+    int result = binarySearch(arr, size, target);
+
+    if (result != -1) {
+        cout << "Target found at index: " << result << endl;
+    } else {
+        cout << "Target not found in the array." << endl;
+    }
+
+    return 0;
+}
+
+
+
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+void insertionSort(vector<int>& arr) {
+    int n = arr.size();
+    for (int i = 1; i < n; ++i) {
+        int key = arr[i];  // Element to be compared
+        int j = i - 1;
+
+        // Move elements of arr[0..i-1] that are greater than key
+        // to one position ahead of their current position
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            --j;
+        }
+        arr[j + 1] = key;  // Place the key in the correct position
+    }
+}
+
+int main() {
+    vector<int> arr = {12, 11, 13, 5, 6};
+    
+    cout << "Original array: ";
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+
+    insertionSort(arr);
+
+    cout << "Sorted array: ";
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
