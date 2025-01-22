@@ -11,6 +11,7 @@ void push();
 void pop();
 void peak();
 void display();
+void search();
 int main(){
  int choice;
 
@@ -20,7 +21,8 @@ int main(){
         cout << "2. pop\n";
         cout << "3. peak\n";
         cout << "4. display\n";
-        cout << "5. Exit\n";
+        cout<< "5. search\n";
+        cout << "6. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
 
@@ -37,9 +39,11 @@ int main(){
              case 4:
                 display();
                 break;
-            
+            case 5:
+                search();
+                break;
             default:
-                cout << "Invalid choice. Try again.\n";
+                cout << "Invalid choice\n";
         }
     }
 
@@ -87,4 +91,23 @@ void display(){
     cout << "Name: " << temp->name << endl;
     temp = temp->next;
   }
+}
+void search(){
+  char searchID[25];
+  if(head == NULL){
+    cout << "Stack is empty\n";
+    return;
+  }
+  cout << "Enter ID: " ;
+  cin>>searchID;
+  student *temp = head;
+  while(temp != NULL) {
+if(strcmp(temp->ID, searchID)==0){
+  cout << "ID: " << temp->ID << endl;
+  cout <<"name: " << temp->name << endl;
+  return;
+}
+temp = temp->next;
+  }
+  cout << "the student not found here\n";
 }
