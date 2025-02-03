@@ -3,7 +3,6 @@
 
 using namespace std;
 
-// Structure for Student node (Doubly Linked List)
 struct Student {
     string id, name;
     float marks[5];
@@ -131,7 +130,8 @@ void dequeueAtPosition(int position) {
     }
 
     Student* temp = front;
-    for (int i = 1; temp->next != nullptr && i < position; i++) {
+    int i;
+    for (i = 1; temp->next != nullptr && i < position; i++) {
         temp = temp->next;
     }
 

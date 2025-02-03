@@ -1,13 +1,15 @@
 #include <iostream>
 #include <cstring> 
-#include <conio.h> 
 using namespace std;
+
 struct student {
     char ID[25];
     char name[25];
     char grade[5];
     student *next;
 } *start = NULL;
+
+// Function to count the number of nodes in the linked list
 int count_nodes() {
     int count = 0;
     student *temp = start;
@@ -17,8 +19,8 @@ int count_nodes() {
     }
     return count;
 }
-int n = count_nodes(); 
-student *arr = new student[n]; 
+
+// Function to insert a new student record
 void insert_data() {
     student *newnode = new student;
     cout << "Please enter ID: ";
@@ -32,6 +34,16 @@ void insert_data() {
     cout << "Student added successfully!" << endl;
 }
 
+// Function to copy linked list data into an array
+void copy_to_array(student *arr, int n) {
+    student *temp = start;
+    for (int i = 0; i < n && temp != NULL; i++) {
+        arr[i] = *temp; // Copying student data
+        temp = temp->next;
+    }
+}
+
+// Function to sort the array based on student ID
 void sort_array(student *arr, int n) {
     for (int i = 0; i < n - 1; i++) {
         int minIndex = i; 
@@ -46,7 +58,10 @@ void sort_array(student *arr, int n) {
             arr[minIndex] = temp;
         }
     }
-}void search_data() {
+}
+
+// Function to search for a student by ID
+void search_data() {
     if (start == NULL) {
         cout << "The list is empty." << endl;
         return;
@@ -61,18 +76,14 @@ void sort_array(student *arr, int n) {
     cout << "Enter the ID to search: ";
     cin >> searchID;
 
-   
+    // Binary search implementation
     int low = 0, high = n - 1, mid;
     while (low <= high) {
         mid = (low + high) / 2;
         if (strcmp(arr[mid].ID, searchID) == 0) {
             cout << "Student found! ID: " << arr[mid].ID
-                 << ", Name: " << arr[mid].name << endl;
-            cout << "Grades: ";
-            for (int i = 0; i < arr[mid].gradeCount; i++) {
-                cout << arr[mid].grades[i] << " ";
-            }
-            cout << endl;
+                 << ", Name: " << arr[mid].name 
+                 << ", Grade: " << arr[mid].grade << endl;
             delete[] arr;
             return;
         } else if (strcmp(arr[mid].ID, searchID) < 0) {
@@ -86,22 +97,16 @@ void sort_array(student *arr, int n) {
     delete[] arr; 
 }
 
-void inverse_array(student *arr,n) {
-	int n = count_nodes(); 
-    for (int i = 0; i < n - 1; i++) {
-        int maxIndex = i; 
-        for (int j = i + 1; j < n; j++) {
-            if ((arr[j].ID, arr[minIndex].ID) > 0) {
-                maxIndex = j; 
-            }
-        }
-        if (maxIndex != i) {
-            student temp = arr[i];
-            arr[i] = arr[maxIndex];
-            arr[maxIndex] = temp;
-        }
+// Function to reverse (inverse) the array
+void inverse_array(student *arr, int n) {
+    for (int i = 0; i < n / 2; i++) {
+        student temp = arr[i];
+        arr[i] = arr[n - i - 1];
+        arr[n - i - 1] = temp;
     }
 }
+
+// Function to remove a student by ID
 void remove_student() {
     if (start == NULL) {
         cout << "The list is empty." << endl;
@@ -133,18 +138,22 @@ void remove_student() {
     cout << "Student with ID " << removeID << " not found." << endl;
 }
 
-
+// Main function with menu
 int main() {
     int choice;
     while (true) {
         cout << "\nMenu:\n";
         cout << "1. Insert Data\n";
         cout << "2. Search Data\n";
-        cout << "3. sort\n";
-        cout << "4. inverse_array\n";
-        cout << "5. Exit\n";
+        cout << "3. Sort Data\n";
+        cout << "4. Reverse Data\n";
+        cout << "5. Remove Student\n";
+        cout << "6. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
+
+        int n = count_nodes();
+        student *arr = new student[n];
 
         switch (choice) {
             case 1:
@@ -154,17 +163,25 @@ int main() {
                 search_data();
                 break;
             case 3:
-                sort_array();
+                copy_to_array(arr, n);
+                sort_array(arr, n);
+                cout << "Students sorted by ID." << endl;
                 break;
             case 4:
-                inverse_array();
+                copy_to_array(arr, n);
+                inverse_array(arr, n);
+                cout << "Students list reversed." << endl;
                 break;
             case 5:
+                remove_student();
+                break;
+            case 6:
                 cout << "Exiting program." << endl;
+                delete[] arr;
                 return 0;
             default:
-                cout << " Please try again." << endl;
+                cout << "Invalid choice. Please try again." << endl;
         }
+        delete[] arr; 
     }
 }
-

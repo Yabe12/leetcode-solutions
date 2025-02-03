@@ -3,7 +3,6 @@
 
 using namespace std;
 
-// Structure for Student node
 struct Student {
     string id, name;
     float marks[5];
