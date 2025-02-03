@@ -1,21 +1,21 @@
 #include <iostream>
-#include <cstring>  // Falcon-compatible string manipulation
+#include <cstring>  
 using namespace std;
 
 struct Node {
-    int id;   // Unique identifier
-    char data[50];  // Fixed-size character array for data
+    int id;  
+    char data[50];  
     Node* next;
     Node* prev;
 };
 
-Node* head = NULL;  // Global head pointer
+Node* head = NULL;  
 
 void insertById(int id, const char* data) {
     Node* newNode = new Node;
     newNode->id = id;
     strncpy(newNode->data, data, sizeof(newNode->data) - 1);
-    newNode->data[sizeof(newNode->data) - 1] = '\0';  // Null-terminate
+    newNode->data[sizeof(newNode->data) - 1] = '\0';  
 
     if (head == NULL) {
         newNode->next = newNode;

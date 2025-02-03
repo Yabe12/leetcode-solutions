@@ -1,20 +1,20 @@
 #include <iostream>
-#include <cstring>  // Falcon requires cstring for string manipulation
+#include <cstring> 
 using namespace std;
 
 struct Node {
-    int id;   // Unique identifier for the node
-    char data[50];  // Fixed-size character array for compatibility
+    int id;  
+    char data[50];  
     Node* next;
 };
 
-Node* head = nullptr;  // Global head pointer for the list
+Node* head = nullptr; 
 
 void insertById(int id, const char* data) {
     Node* newNode = new Node;
     newNode->id = id;
-    strncpy(newNode->data, data, sizeof(newNode->data) - 1);  // Safe copy of string
-    newNode->data[sizeof(newNode->data) - 1] = '\0';  // Null-terminate
+    strncpy(newNode->data, data, sizeof(newNode->data) - 1);  
+    newNode->data[sizeof(newNode->data) - 1] = '\0';  
     newNode->next = nullptr;
     if (head == nullptr) {
         head = newNode;
@@ -71,12 +71,12 @@ int main() {
     insertById(1, "Alice");
     insertById(2, "Bob");
     insertById(3, "Charlie");
-    display();  // Output: [ID: 1, Data: Alice] -> [ID: 2, Data: Bob] -> [ID: 3, Data: Charlie] -> NULL
+    display();  
 
-    searchById(2);  // Output: Found Node with ID 2: Data = Bob
+    searchById(2);  
     deleteById(2);
-    display();  // Output: [ID: 1, Data: Alice] -> [ID: 3, Data: Charlie] -> NULL
-    searchById(2);  // Output: Node with ID 2 not found.
+    display();  
+    searchById(2);  
 
     return 0;
 }

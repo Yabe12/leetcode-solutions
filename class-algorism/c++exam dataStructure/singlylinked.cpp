@@ -1,14 +1,13 @@
 #include <iostream>
 #include <string>
-#include <stack>  // For backward traversal
+#include <stack>  
 using namespace std;
 
-// Define a structure for a node representing student information
 struct Student {
     int ID;
     string name;
     float GPA;
-    Student* next;  // Pointer to the next node
+    Student* next;  
 };
 
 // Function to add a new student at the end of the list (circular singly linked list)
@@ -144,7 +143,7 @@ void TRAVERSE(Student* head) {
     do {
         cout << "ID: " << temp->ID << ", Name: " << temp->name << ", GPA: " << temp->GPA << "\n";
         temp = temp->next;
-    } while (temp != head); } // Loop until we reach the head again
+    } while (temp != head); } 
 
 int main() {
     Student* head = NULL; // Initialize an empty list

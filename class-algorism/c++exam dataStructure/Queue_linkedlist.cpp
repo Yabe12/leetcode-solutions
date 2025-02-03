@@ -19,7 +19,7 @@ struct Queue {
     void enqueue(int value) {
         Node* newNode = new Node(value);
         if (rear == NULL) {
-            front = rear = newNode; // Queue is empty
+            front = rear = newNode; 
         } else {
             rear->next = newNode;
             rear = newNode;
@@ -36,7 +36,7 @@ struct Queue {
         cout << front->data << " dequeued from the queue.\n";
         front = front->next;
 
-        if (front == NULL) { // Queue is empty after dequeue
+        if (front == NULL) {
             rear = NULL;
         }
         delete temp;
@@ -86,7 +86,7 @@ struct Queue {
     }
 
     ~Queue() {
-        clear(); // Clean up memory by dequeuing all elements
+        clear(); 
     }
 };
 

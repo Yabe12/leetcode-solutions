@@ -20,7 +20,7 @@ struct Queue {
             return;
         }
         if (front == -1) {
-            front = 0;  // First element being added
+            front = 0; 
         }
         arr[++rear] = value;
         cout << value << " enqueued into the queue.\n";
@@ -33,7 +33,7 @@ struct Queue {
         }
         cout << arr[front] << " dequeued from the queue.\n";
         if (front == rear) {
-            front = rear = -1; // Reset queue if it is empty
+            front = rear = -1; 
         } else {
             front++;
         }
