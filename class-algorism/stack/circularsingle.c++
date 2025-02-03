@@ -10,7 +10,7 @@ struct Student {
     Student* next;
 };
 
-// Stack top pointer
+// Top pointer for the stack (circular list)
 Student* top = nullptr;
 
 // Function prototypes
@@ -24,7 +24,7 @@ void updateStudent();
 float calculateGPA(Student* student);
 float reportTotalGPA();
 
-// Push (Insert at Top)
+// Push (Insert at Top - Stack behavior)
 void pushStudent() {
     string id, name;
     float marks[5];
@@ -36,22 +36,32 @@ void pushStudent() {
     cout << "Enter 5 subject marks: ";
     for (int i = 0; i < 5; i++) cin >> marks[i];
 
-    // Create new student node
-    Student* newStudent = new Student{id, name, {}, top};
+    Student* newStudent = new Student{id, name, {}, nullptr};
     
     // Copy marks
     for (int i = 0; i < 5; i++) {
         newStudent->marks[i] = marks[i];
     }
 
-    // Move top to the new node
-    top = newStudent;
+    if (!top) {
+        newStudent->next = newStudent;  // Circular reference
+        top = newStudent;
+    } else {
+        Student* temp = top;
+        while (temp->next != top) {
+            temp = temp->next;
+        }
+        temp->next = newStudent;
+        newStudent->next = top;
+        top = newStudent;
+    }
+
     cout << "Student pushed onto stack.\n";
 }
 
 // Push at a Specific Position
 void pushAtPosition(int position) {
-    if (position <= 1) {
+    if (position <= 1 || !top) {
         pushStudent();
         return;
     }
@@ -72,31 +82,40 @@ void pushAtPosition(int position) {
     }
 
     Student* temp = top;
-    for (int i = 1; temp && i < position - 1; i++) {
+    for (int i = 1; temp->next != top && i < position - 1; i++) {
         temp = temp->next;
-    }
-
-    if (!temp) {
-        cout << "Position out of range. Adding at the end.\n";
     }
 
     newStudent->next = temp->next;
     temp->next = newStudent;
+
     cout << "Student added at position " << position << ".\n";
 }
 
-// Pop (Remove from Top)
+// Pop (Remove from Top - Stack behavior)
 void popStudent() {
     if (!top) {
         cout << "Stack is empty! No student to remove.\n";
         return;
     }
 
-    Student* temp = top;
-    top = top->next;
+    if (top->next == top) {
+        delete top;
+        top = nullptr;
+    } else {
+        Student* temp = top;
+        Student* prev = top;
 
-    cout << "Popped Student: " << temp->id << " - " << temp->name << endl;
-    delete temp;
+        while (prev->next != top) {
+            prev = prev->next;
+        }
+
+        prev->next = top->next;
+        top = top->next;
+        delete temp;
+    }
+
+    cout << "Student popped from stack.\n";
 }
 
 // Pop at a Specific Position
@@ -112,19 +131,22 @@ void popAtPosition(int position) {
     }
 
     Student* temp = top;
-    for (int i = 1; temp->next && i < position - 1; i++) {
+    Student* prev = nullptr;
+
+    for (int i = 1; temp->next != top && i < position; i++) {
+        prev = temp;
         temp = temp->next;
     }
 
-    if (!temp->next) {
+    if (!prev || temp == top) {
         cout << "Position out of range.\n";
         return;
     }
 
-    Student* toDelete = temp->next;
-    temp->next = toDelete->next;
-    cout << "Popped Student at position " << position << ": " << toDelete->id << " - " << toDelete->name << endl;
-    delete toDelete;
+    prev->next = temp->next;
+    delete temp;
+
+    cout << "Student popped at position " << position << ".\n";
 }
 
 // Search Student by ID or Name
@@ -137,12 +159,14 @@ void searchStudent() {
     cin >> value;
 
     Student* temp = top;
-    while (temp) {
-        if ((choice == 1 && temp->id == value) || (choice == 2 && temp->name == value)) {
-            cout << "Found: ID: " << temp->id << " Name: " << temp->name << " GPA: " << calculateGPA(temp) << "\n";
-            return;
-        }
-        temp = temp->next;
+    if (top) {
+        do {
+            if ((choice == 1 && temp->id == value) || (choice == 2 && temp->name == value)) {
+                cout << "Found: ID: " << temp->id << " Name: " << temp->name << " GPA: " << calculateGPA(temp) << "\n";
+                return;
+            }
+            temp = temp->next;
+        } while (temp != top);
     }
     cout << "Student not found\n";
 }
@@ -157,32 +181,34 @@ void updateStudent() {
     cin >> id;
     Student* temp = top;
     
-    while (temp) {
-        if (temp->id == id) {
-            cout << "\n1. Update ID\n2. Update Name\n3. Update Marks\n4. Update All\nEnter choice: ";
-            cin >> choice;
+    if (top) {
+        do {
+            if (temp->id == id) {
+                cout << "\n1. Update ID\n2. Update Name\n3. Update Marks\n4. Update All\nEnter choice: ";
+                cin >> choice;
 
-            if (choice == 1 || choice == 4) {
-                cout << "Enter new ID: ";
-                cin >> newId;
-                temp->id = newId;
-            }
-            if (choice == 2 || choice == 4) {
-                cout << "Enter new Name: ";
-                cin >> newName;
-                temp->name = newName;
-            }
-            if (choice == 3 || choice == 4) {
-                cout << "Enter new marks: ";
-                for (int i = 0; i < 5; i++) cin >> newMarks[i];
-
-                for (int i = 0; i < 5; i++) {
-                    temp->marks[i] = newMarks[i];
+                if (choice == 1 || choice == 4) {
+                    cout << "Enter new ID: ";
+                    cin >> newId;
+                    temp->id = newId;
                 }
+                if (choice == 2 || choice == 4) {
+                    cout << "Enter new Name: ";
+                    cin >> newName;
+                    temp->name = newName;
+                }
+                if (choice == 3 || choice == 4) {
+                    cout << "Enter new marks: ";
+                    for (int i = 0; i < 5; i++) cin >> newMarks[i];
+
+                    for (int i = 0; i < 5; i++) {
+                        temp->marks[i] = newMarks[i];
+                    }
+                }
+                return;
             }
-            return;
-        }
-        temp = temp->next;
+            temp = temp->next;
+        } while (temp != top);
     }
     cout << "Student not found\n";
 }
@@ -196,12 +222,12 @@ void displayStack() {
 
     Student* temp = top;
     cout << "Students in Stack (Top to Bottom):\n";
-    while (temp) {
+    do {
         cout << "ID: " << temp->id << ", Name: " << temp->name << "\nMarks: ";
         for (int i = 0; i < 5; i++) cout << temp->marks[i] << " ";
         cout << "\nGPA: " << calculateGPA(temp) << "\n\n";
         temp = temp->next;
-    }
+    } while (temp != top);
 }
 
 // Calculate GPA
@@ -216,10 +242,12 @@ float reportTotalGPA() {
     Student* temp = top;
     float totalGPA = 0;
     int count = 0;
-    while (temp) {
-        totalGPA += calculateGPA(temp);
-        count++;
-        temp = temp->next;
+    if (top) {
+        do {
+            totalGPA += calculateGPA(temp);
+            count++;
+            temp = temp->next;
+        } while (temp != top);
     }
     return (count > 0) ? (totalGPA / count) : 0;
 }

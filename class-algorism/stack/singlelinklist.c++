@@ -6,7 +6,7 @@ using namespace std;
 // Structure for Student node
 struct Student {
     string id, name;
-    float marks[5];
+    float marks[5];  // Assuming 5 subjects
     Student* next;
 };
 
@@ -18,11 +18,9 @@ void pushStudent();
 void pushAtPosition(int position);
 void popStudent();
 void popAtPosition(int position);
-void searchStudent();
+void peekStudent();
 void displayStack();
-void updateStudent();
 float calculateGPA(Student* student);
-float reportTotalGPA();
 
 // Push (Insert at Top)
 void pushStudent() {
@@ -36,10 +34,8 @@ void pushStudent() {
     cout << "Enter 5 subject marks: ";
     for (int i = 0; i < 5; i++) cin >> marks[i];
 
-    // Create new student node
-    Student* newStudent = new Student{id, name, {}, top};
-    
-    // Copy marks
+    // Create new student
+    Student* newStudent = new Student{id, name, {}, top}; 
     for (int i = 0; i < 5; i++) {
         newStudent->marks[i] = marks[i];
     }
@@ -93,7 +89,7 @@ void popStudent() {
     }
 
     Student* temp = top;
-    top = top->next;
+    top = top->next;  // Move top to the next node
 
     cout << "Popped Student: " << temp->id << " - " << temp->name << endl;
     delete temp;
@@ -127,64 +123,15 @@ void popAtPosition(int position) {
     delete toDelete;
 }
 
-// Search Student by ID or Name
-void searchStudent() {
-    int choice;
-    string value;
-    cout << "\n1. Search by ID\n2. Search by Name\nEnter choice: ";
-    cin >> choice;
-    cout << "Enter " << (choice == 1 ? "ID: " : "Name: ");
-    cin >> value;
-
-    Student* temp = top;
-    while (temp) {
-        if ((choice == 1 && temp->id == value) || (choice == 2 && temp->name == value)) {
-            cout << "Found: ID: " << temp->id << " Name: " << temp->name << " GPA: " << calculateGPA(temp) << "\n";
-            return;
-        }
-        temp = temp->next;
+// Peek (Show Top Student)
+void peekStudent() {
+    if (!top) {
+        cout << "Stack is empty!\n";
+        return;
     }
-    cout << "Student not found\n";
-}
 
-// Update Student Details
-void updateStudent() {
-    string id, newId, newName;
-    float newMarks[5];
-    int choice;
-    
-    cout << "Enter ID to update: ";
-    cin >> id;
-    Student* temp = top;
-    
-    while (temp) {
-        if (temp->id == id) {
-            cout << "\n1. Update ID\n2. Update Name\n3. Update Marks\n4. Update All\nEnter choice: ";
-            cin >> choice;
-
-            if (choice == 1 || choice == 4) {
-                cout << "Enter new ID: ";
-                cin >> newId;
-                temp->id = newId;
-            }
-            if (choice == 2 || choice == 4) {
-                cout << "Enter new Name: ";
-                cin >> newName;
-                temp->name = newName;
-            }
-            if (choice == 3 || choice == 4) {
-                cout << "Enter new marks: ";
-                for (int i = 0; i < 5; i++) cin >> newMarks[i];
-
-                for (int i = 0; i < 5; i++) {
-                    temp->marks[i] = newMarks[i];
-                }
-            }
-            return;
-        }
-        temp = temp->next;
-    }
-    cout << "Student not found\n";
+    cout << "Top Student -> ID: " << top->id << ", Name: " << top->name;
+    cout << ", GPA: " << calculateGPA(top) << "\n";
 }
 
 // Display Stack (From Top to Bottom)
@@ -211,35 +158,29 @@ float calculateGPA(Student* student) {
     return sum / 5;
 }
 
-// Report Total GPA
-float reportTotalGPA() {
-    Student* temp = top;
-    float totalGPA = 0;
-    int count = 0;
-    while (temp) {
-        totalGPA += calculateGPA(temp);
-        count++;
-        temp = temp->next;
-    }
-    return (count > 0) ? (totalGPA / count) : 0;
-}
-
 // Main Menu
 int main() {
     int choice, position;
     do {
-        cout << "\n1. Push Student\n2. Push at Position\n3. Pop Student\n4. Pop at Position\n5. Search Student\n6. Display Stack\n7. Update Student\n8. Report GPA\n9. Exit\nChoice: ";
+        cout << "\n1. Push Student\n2. Push at Position\n3. Pop Student\n4. Pop at Position\n5. Peek Student\n6. Display Stack\n7. Exit\nChoice: ";
         cin >> choice;
         switch (choice) {
             case 1: pushStudent(); break;
-            case 2: cout << "Enter position: "; cin >> position; pushAtPosition(position); break;
+            case 2: 
+                cout << "Enter position to push: ";
+                cin >> position;
+                pushAtPosition(position);
+                break;
             case 3: popStudent(); break;
-            case 4: cout << "Enter position: "; cin >> position; popAtPosition(position); break;
-            case 5: searchStudent(); break;
+            case 4:
+                cout << "Enter position to pop: ";
+                cin >> position;
+                popAtPosition(position);
+                break;
+            case 5: peekStudent(); break;
             case 6: displayStack(); break;
-            case 7: updateStudent(); break;
-            case 8: cout << "Total GPA: " << reportTotalGPA() << "\n"; break;
         }
-    } while (choice != 9);
+    } while (choice != 7);
+
     return 0;
 }

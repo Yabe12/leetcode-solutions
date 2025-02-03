@@ -8,9 +8,10 @@ struct Student {
     string id, name;
     float marks[5];
     Student* next;
+    Student* prev;
 };
 
-// Stack top pointer
+// Top pointer for the stack
 Student* top = nullptr;
 
 // Function prototypes
@@ -37,14 +38,17 @@ void pushStudent() {
     for (int i = 0; i < 5; i++) cin >> marks[i];
 
     // Create new student node
-    Student* newStudent = new Student{id, name, {}, top};
+    Student* newStudent = new Student{id, name, {}, top, nullptr};
     
     // Copy marks
     for (int i = 0; i < 5; i++) {
         newStudent->marks[i] = marks[i];
     }
 
-    // Move top to the new node
+    if (top) {
+        top->prev = newStudent;
+    }
+
     top = newStudent;
     cout << "Student pushed onto stack.\n";
 }
@@ -66,7 +70,7 @@ void pushAtPosition(int position) {
     cout << "Enter 5 subject marks: ";
     for (int i = 0; i < 5; i++) cin >> marks[i];
 
-    Student* newStudent = new Student{id, name, {}, nullptr};
+    Student* newStudent = new Student{id, name, {}, nullptr, nullptr};
     for (int i = 0; i < 5; i++) {
         newStudent->marks[i] = marks[i];
     }
@@ -81,6 +85,12 @@ void pushAtPosition(int position) {
     }
 
     newStudent->next = temp->next;
+    newStudent->prev = temp;
+
+    if (temp->next) {
+        temp->next->prev = newStudent;
+    }
+
     temp->next = newStudent;
     cout << "Student added at position " << position << ".\n";
 }
@@ -94,6 +104,10 @@ void popStudent() {
 
     Student* temp = top;
     top = top->next;
+
+    if (top) {
+        top->prev = nullptr;
+    }
 
     cout << "Popped Student: " << temp->id << " - " << temp->name << endl;
     delete temp;
@@ -112,19 +126,25 @@ void popAtPosition(int position) {
     }
 
     Student* temp = top;
-    for (int i = 1; temp->next && i < position - 1; i++) {
+    for (int i = 1; temp && i < position; i++) {
         temp = temp->next;
     }
 
-    if (!temp->next) {
+    if (!temp) {
         cout << "Position out of range.\n";
         return;
     }
 
-    Student* toDelete = temp->next;
-    temp->next = toDelete->next;
-    cout << "Popped Student at position " << position << ": " << toDelete->id << " - " << toDelete->name << endl;
-    delete toDelete;
+    if (temp->prev) {
+        temp->prev->next = temp->next;
+    }
+
+    if (temp->next) {
+        temp->next->prev = temp->prev;
+    }
+
+    cout << "Popped Student at position " << position << ": " << temp->id << " - " << temp->name << endl;
+    delete temp;
 }
 
 // Search Student by ID or Name

@@ -3,29 +3,31 @@
 
 using namespace std;
 
-// Structure for Student node
+// Structure for Student node (Doubly Linked List)
 struct Student {
     string id, name;
     float marks[5];
     Student* next;
+    Student* prev;
 };
 
-// Stack top pointer
-Student* top = nullptr;
+// Front and Rear pointers for the queue
+Student* front = nullptr;
+Student* rear = nullptr;
 
 // Function prototypes
-void pushStudent();
-void pushAtPosition(int position);
-void popStudent();
-void popAtPosition(int position);
+void enqueueStudent();
+void enqueueAtPosition(int position);
+void dequeueStudent();
+void dequeueAtPosition(int position);
 void searchStudent();
-void displayStack();
+void displayQueue();
 void updateStudent();
 float calculateGPA(Student* student);
 float reportTotalGPA();
 
-// Push (Insert at Top)
-void pushStudent() {
+// Enqueue (Insert at Rear - Queue behavior)
+void enqueueStudent() {
     string id, name;
     float marks[5];
 
@@ -36,23 +38,28 @@ void pushStudent() {
     cout << "Enter 5 subject marks: ";
     for (int i = 0; i < 5; i++) cin >> marks[i];
 
-    // Create new student node
-    Student* newStudent = new Student{id, name, {}, top};
-    
+    Student* newStudent = new Student{id, name, {}, nullptr, nullptr};
+
     // Copy marks
     for (int i = 0; i < 5; i++) {
         newStudent->marks[i] = marks[i];
     }
 
-    // Move top to the new node
-    top = newStudent;
-    cout << "Student pushed onto stack.\n";
+    if (!rear) {
+        front = rear = newStudent;
+    } else {
+        rear->next = newStudent;
+        newStudent->prev = rear;
+        rear = newStudent;
+    }
+
+    cout << "Student enqueued successfully.\n";
 }
 
-// Push at a Specific Position
-void pushAtPosition(int position) {
-    if (position <= 1) {
-        pushStudent();
+// Enqueue at a Specific Position
+void enqueueAtPosition(int position) {
+    if (position <= 1 || !front) {
+        enqueueStudent();
         return;
     }
 
@@ -66,65 +73,82 @@ void pushAtPosition(int position) {
     cout << "Enter 5 subject marks: ";
     for (int i = 0; i < 5; i++) cin >> marks[i];
 
-    Student* newStudent = new Student{id, name, {}, nullptr};
+    Student* newStudent = new Student{id, name, {}, nullptr, nullptr};
     for (int i = 0; i < 5; i++) {
         newStudent->marks[i] = marks[i];
     }
 
-    Student* temp = top;
-    for (int i = 1; temp && i < position - 1; i++) {
+    Student* temp = front;
+    for (int i = 1; temp->next != nullptr && i < position - 1; i++) {
         temp = temp->next;
     }
 
-    if (!temp) {
-        cout << "Position out of range. Adding at the end.\n";
+    newStudent->next = temp->next;
+    newStudent->prev = temp;
+
+    if (temp->next) {
+        temp->next->prev = newStudent;
     }
 
-    newStudent->next = temp->next;
     temp->next = newStudent;
+
+    if (!newStudent->next) {
+        rear = newStudent;
+    }
+
     cout << "Student added at position " << position << ".\n";
 }
 
-// Pop (Remove from Top)
-void popStudent() {
-    if (!top) {
-        cout << "Stack is empty! No student to remove.\n";
+// Dequeue (Remove from Front - Queue behavior)
+void dequeueStudent() {
+    if (!front) {
+        cout << "Queue is empty! No student to remove.\n";
         return;
     }
 
-    Student* temp = top;
-    top = top->next;
-
-    cout << "Popped Student: " << temp->id << " - " << temp->name << endl;
+    Student* temp = front;
+    front = front->next;
+    if (front) {
+        front->prev = nullptr;
+    } else {
+        rear = nullptr;
+    }
+    
     delete temp;
+    cout << "Student dequeued successfully.\n";
 }
 
-// Pop at a Specific Position
-void popAtPosition(int position) {
-    if (!top) {
-        cout << "Stack is empty! No student to remove.\n";
+// Dequeue at a Specific Position
+void dequeueAtPosition(int position) {
+    if (!front) {
+        cout << "Queue is empty! No student to remove.\n";
         return;
     }
 
     if (position == 1) {
-        popStudent();
+        dequeueStudent();
         return;
     }
 
-    Student* temp = top;
-    for (int i = 1; temp->next && i < position - 1; i++) {
+    Student* temp = front;
+    for (int i = 1; temp->next != nullptr && i < position; i++) {
         temp = temp->next;
     }
 
-    if (!temp->next) {
+    if (!temp->next && i < position) {
         cout << "Position out of range.\n";
         return;
     }
 
-    Student* toDelete = temp->next;
-    temp->next = toDelete->next;
-    cout << "Popped Student at position " << position << ": " << toDelete->id << " - " << toDelete->name << endl;
-    delete toDelete;
+    temp->prev->next = temp->next;
+    if (temp->next) {
+        temp->next->prev = temp->prev;
+    } else {
+        rear = temp->prev;
+    }
+
+    delete temp;
+    cout << "Student dequeued at position " << position << ".\n";
 }
 
 // Search Student by ID or Name
@@ -136,7 +160,7 @@ void searchStudent() {
     cout << "Enter " << (choice == 1 ? "ID: " : "Name: ");
     cin >> value;
 
-    Student* temp = top;
+    Student* temp = front;
     while (temp) {
         if ((choice == 1 && temp->id == value) || (choice == 2 && temp->name == value)) {
             cout << "Found: ID: " << temp->id << " Name: " << temp->name << " GPA: " << calculateGPA(temp) << "\n";
@@ -152,11 +176,11 @@ void updateStudent() {
     string id, newId, newName;
     float newMarks[5];
     int choice;
-    
+
     cout << "Enter ID to update: ";
     cin >> id;
-    Student* temp = top;
-    
+    Student* temp = front;
+
     while (temp) {
         if (temp->id == id) {
             cout << "\n1. Update ID\n2. Update Name\n3. Update Marks\n4. Update All\nEnter choice: ";
@@ -187,15 +211,15 @@ void updateStudent() {
     cout << "Student not found\n";
 }
 
-// Display Stack (From Top to Bottom)
-void displayStack() {
-    if (!top) {
-        cout << "Stack is empty!\n";
+// Display Queue (From Front to Rear)
+void displayQueue() {
+    if (!front) {
+        cout << "Queue is empty!\n";
         return;
     }
 
-    Student* temp = top;
-    cout << "Students in Stack (Top to Bottom):\n";
+    Student* temp = front;
+    cout << "Students in Queue (Front to Rear):\n";
     while (temp) {
         cout << "ID: " << temp->id << ", Name: " << temp->name << "\nMarks: ";
         for (int i = 0; i < 5; i++) cout << temp->marks[i] << " ";
@@ -213,7 +237,7 @@ float calculateGPA(Student* student) {
 
 // Report Total GPA
 float reportTotalGPA() {
-    Student* temp = top;
+    Student* temp = front;
     float totalGPA = 0;
     int count = 0;
     while (temp) {
@@ -228,15 +252,15 @@ float reportTotalGPA() {
 int main() {
     int choice, position;
     do {
-        cout << "\n1. Push Student\n2. Push at Position\n3. Pop Student\n4. Pop at Position\n5. Search Student\n6. Display Stack\n7. Update Student\n8. Report GPA\n9. Exit\nChoice: ";
+        cout << "\n1. Enqueue Student\n2. Enqueue at Position\n3. Dequeue Student\n4. Dequeue at Position\n5. Search Student\n6. Display Queue\n7. Update Student\n8. Report GPA\n9. Exit\nChoice: ";
         cin >> choice;
         switch (choice) {
-            case 1: pushStudent(); break;
-            case 2: cout << "Enter position: "; cin >> position; pushAtPosition(position); break;
-            case 3: popStudent(); break;
-            case 4: cout << "Enter position: "; cin >> position; popAtPosition(position); break;
+            case 1: enqueueStudent(); break;
+            case 2: cout << "Enter position: "; cin >> position; enqueueAtPosition(position); break;
+            case 3: dequeueStudent(); break;
+            case 4: cout << "Enter position: "; cin >> position; dequeueAtPosition(position); break;
             case 5: searchStudent(); break;
-            case 6: displayStack(); break;
+            case 6: displayQueue(); break;
             case 7: updateStudent(); break;
             case 8: cout << "Total GPA: " << reportTotalGPA() << "\n"; break;
         }
